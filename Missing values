@@ -1,0 +1,7 @@
+# Check for null values
+data1.isnull().sum()
+
+# Drop rows with missing values
+data2 = data1.dropna()
+data2.isnull().sum()
+data2.head()
