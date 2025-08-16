@@ -1,0 +1,34 @@
+# Remove rows where total_sqft/BHK < 300
+data5 = data4[~(data4.total_sqft / data4.BHK < 300)]
+
+# Remove outliers based on Price_per_sqft
+def remove_pps_outliers(df):
+    df_out = pd.DataFrame()
+    for key, subdf in df.groupby('location'):
+        m = np.mean(subdf.Price_per_sqft)
+        st = np.std(subdf.Price_per_sqft)
+        reduced_df = subdf[(subdf.Price_per_sqft > (m - st)) & (subdf.Price_per_sqft <= (m + st))]
+        df_out = pd.concat([df_out, reduced_df], ignore_index=True)
+    return df_out
+
+data6 = remove_pps_outliers(data5)
+
+# Remove BHK outliers
+def remove_bhk_outliers(df):
+    exclude_indices = np.array([])
+    for location, location_df in df.groupby('location'):
+        bhk_stats = {}
+        for bhk, bhk_df in location_df.groupby('BHK'):
+            bhk_stats[bhk] = {'mean': np.mean(bhk_df.Price_per_sqft),
+                               'std': np.std(bhk_df.Price_per_sqft),
+                               'count': bhk_df.shape[0]}
+        for bhk, bhk_df in location_df.groupby('BHK'):
+            stats = bhk_stats.get(bhk - 1)
+            if stats and stats['count'] > 5:
+                exclude_indices = np.append(exclude_indices, bhk_df[bhk_df.Price_per_sqft < stats['mean']].index.values)
+    return df.drop(exclude_indices, axis='index')
+
+data7 = remove_bhk_outliers(data6)
+
+# Remove rows where bathrooms > BHK + 2
+data8 = data7[data7.bath < data7.BHK + 2]
