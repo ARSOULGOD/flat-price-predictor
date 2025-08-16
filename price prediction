@@ -1,0 +1,23 @@
+def predict_price(loc, sqft, bath, bhk):
+    loc_index = np.where(x.columns == loc)[0][0]
+    Z = np.zeros(len(x.columns))
+    Z[0] = sqft
+    Z[1] = bath
+    Z[2] = bhk
+    if loc_index >= 0:
+        Z[loc_index] = 1
+    return lr_clf.predict([Z])[0]
+
+print("Predicted price:", predict_price('Yelahanka', 1000, 2, 3))
+
+import pickle
+import json
+
+# Save model
+with open('banglore_prices_model.pkl', 'wb') as f:
+    pickle.dump(lr_clf, f)
+
+# Save column data
+columns = {'data_columns': [col.lower() for col in x.columns]}
+with open("columns.json", "w") as f:
+    f.write(json.dumps(columns))
