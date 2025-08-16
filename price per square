@@ -1,0 +1,11 @@
+# Add Price per sqft column
+data4 = data3.copy()
+data4['Price_per_sqft'] = data4['price'] * 100000 / data4['total_sqft']
+
+# Clean 'location' column
+data4.location = data4.location.apply(lambda x: x.strip())
+
+# Group by location and handle rare locations
+location_stats = data4.groupby('location')['location'].agg('count').sort_values(ascending=False)
+location_stats_less_than_10 = location_stats[location_stats <= 10]
+data4.location = data4.location.apply(lambda x: 'other' if x in location_stats_less_than_10 else x)
