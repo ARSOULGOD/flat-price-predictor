@@ -1,0 +1,14 @@
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
+# Load dataset
+raw_data = pd.read_csv('/content/Bengaluru_House_Data.csv')
+raw_data.head()
+
+# Drop unnecessary columns
+data1 = raw_data.drop(['area_type', 'society', 'balcony', 'availability'], axis=1)
+data1.head()
