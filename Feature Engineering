@@ -1,0 +1,24 @@
+# Convert 'size' to number of BHK
+data2['BHK'] = data2['size'].apply(lambda x: int(x.split(' ')[0]))
+
+# Create a copy for further processing
+data3 = data2.copy()
+
+# Convert 'total_sqft' to numeric
+def is_float(x):
+    try:
+        float(x)
+    except:
+        return False
+    return True
+
+def converting_sqft_to_num(x):
+    tokens = x.split("-")
+    if len(tokens) == 2:
+        return (float(tokens[0]) + float(tokens[1])) / 2
+    try:
+        return float(x)
+    except:
+        return None
+
+data3['total_sqft'] = data3['total_sqft'].apply(converting_sqft_to_num)
